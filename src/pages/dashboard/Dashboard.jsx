@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, Paper } from "@mui/material";
 import Box from "@mui/material/Box";
 import { useMutation, useQuery } from "react-query";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -13,6 +13,8 @@ export const Dashboard = () => {
   const [informationBoxState, setInformationBoxState] = useState({
     result: "-",
     balance: "-",
+    lastCost: "",
+    operationType: "",
   });
 
   const { data = [], isLoading } = useQuery(
@@ -29,6 +31,11 @@ export const Dashboard = () => {
     },
   );
 
+  //TODO: move this function to a helper and refactor Calculator.jsx
+  const getOperationById = (id) => {
+    return data.find((operation) => operation.id === id);
+  };
+
   const mutation = useMutation({
     mutationFn: async (record) => {
       const accessToken = await getAccessTokenSilently();
@@ -39,22 +46,36 @@ export const Dashboard = () => {
       setInformationBoxState({
         balance: data.userBalance,
         result: data.operationResult,
+        lastCost: data.amount,
+        operationType: getOperationById(data.operationId).type,
       });
     },
   });
   console.log("OPERATIONS data", data);
   return (
     <AuthedLayout>
-      <Box
-        sx={{
-          display: "flex",
-          flexFlow: "row",
-          justifyContent: "center",
-        }}
-      >
-        {isLoading ? (
-          <CircularProgress />
-        ) : (
+      {isLoading ? (
+        <CircularProgress
+          sx={{
+            display: "flex",
+            position: "absolute",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "80%",
+          }}
+        />
+      ) : (
+        <Paper
+          elevation={1}
+          sx={{
+            display: "flex",
+            flexFlow: "row",
+            justifyContent: "center",
+            flexWrap: "wrap",
+            maxWidth: 900,
+            alignSelf: "center",
+          }}
+        >
           <>
             <Calculator
               operations={data}
@@ -67,8 +88,8 @@ export const Dashboard = () => {
               informationBoxState={informationBoxState}
             />
           </>
-        )}
-      </Box>
+        </Paper>
+      )}
     </AuthedLayout>
   );
 };

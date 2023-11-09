@@ -52,6 +52,7 @@ export function Calculator(props) {
           gridRowGap: "20px",
           padding: "20px",
         }}
+        elevation={3}
       >
         <Typography variant="h4">Calculator</Typography>
         <Typography variant="body2" color="text.secondary">

@@ -1,13 +1,14 @@
 import Box from "@mui/material/Box";
-import { Card, CardContent, CircularProgress } from "@mui/material";
+import { Divider, Paper } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import * as PropTypes from "prop-types";
+import { InformationText } from "./InformationText.jsx";
 
 export const InformationBox = (props) => {
   return (
     <Box
       sx={{
-        alignItems: "center",
+        alignItems: "inherit",
         backgroundColor: "neutral.800",
         backgroundImage: 'url("/assets/gradient-bg.svg")',
         backgroundPosition: "top center",
@@ -25,27 +26,40 @@ export const InformationBox = (props) => {
         },
       }}
     >
-      <Card>
-        <CardContent>
-          {props.mutation.isLoading ? (
-            <CircularProgress />
-          ) : (
-            <>
-              <Typography
-                gutterBottom
-                variant="h5"
-                component="div"
-                color="green"
-              >
-                Result: {props.informationBoxState.result}
-              </Typography>
-              <Typography gutterBottom variant="h5" component="div">
-                Balance: {props.informationBoxState.balance} Credits
-              </Typography>
-            </>
-          )}
-        </CardContent>
-      </Card>
+      <Paper
+        elevation={3}
+        style={{
+          display: "grid",
+          gridRowGap: "20px",
+          padding: "20px",
+          maxWidth: 270,
+          minWidth: 230,
+        }}
+      >
+        <Typography variant="h4">Information</Typography>
+        <InformationText
+          isLoading={props.mutation.isLoading}
+          text={`Result: ${props.informationBoxState.result}`}
+          color={"green"}
+        />
+        <Divider />
+        <InformationText
+          isLoading={props.mutation.isLoading}
+          text={`Operation type: ${props.informationBoxState.operationType}`}
+        />
+        <Divider />
+        <InformationText
+          isLoading={props.mutation.isLoading}
+          text={`Operation cost: ${props.informationBoxState.lastCost} Credits`}
+          color={"indianred"}
+        />
+        <Divider />
+        <InformationText
+          isLoading={props.mutation.isLoading}
+          text={`Balance: ${props.informationBoxState.balance} Credits`}
+        />
+        <Divider />
+      </Paper>
     </Box>
   );
 };
@@ -55,5 +69,7 @@ InformationBox.propTypes = {
   informationBoxState: PropTypes.shape({
     result: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     balance: PropTypes.string,
+    lastCost: PropTypes.number,
+    operationType: PropTypes.string,
   }),
 };
