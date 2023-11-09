@@ -1,0 +1,29 @@
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { App } from "./App.jsx";
+import { BrowserRouter } from "react-router-dom";
+import "./index.css";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { Auth0Provider } from "@auth0/auth0-react";
+import { ENV_VARS } from "./env.js";
+
+const queryClient = new QueryClient();
+
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <BrowserRouter>
+      <Auth0Provider
+        domain={ENV_VARS.AUTH0_DOMAIN}
+        clientId={ENV_VARS.AUTH0_CLIENT_ID}
+        authorizationParams={{
+          audience: ENV_VARS.AUTH0_AUDIENCE,
+          redirect_uri: window.location.origin,
+        }}
+      >
+        <QueryClientProvider client={queryClient}>
+          <App />
+        </QueryClientProvider>
+      </Auth0Provider>
+    </BrowserRouter>
+  </React.StrictMode>,
+);
