@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { CircularProgress, Paper } from "@mui/material";
+import { Alert, CircularProgress, Paper, Snackbar } from "@mui/material";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Calculator } from "../../components/calculator/Calculator.jsx";
 import { AuthedLayout } from "../../components/layout/AuthedLayout.jsx";
-import { fetchOperations, submitOperation } from "../../api/operations";
+import { fetchOperations } from "../../api/operations";
 import { InformationBox } from "../../components/informationBox/InformationBox.jsx";
 import Box from "@mui/material/Box";
+import { submitRecord } from "../../api/records.js";
 
 export const Dashboard = () => {
   const { getAccessTokenSilently } = useAuth0();
@@ -16,6 +17,8 @@ export const Dashboard = () => {
     lastCost: "",
     operationType: "",
   });
+  const [showError, setShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const { data = [], isLoading } = useQuery(
     ["operations"],
@@ -31,7 +34,6 @@ export const Dashboard = () => {
     },
   );
 
-  //TODO: move this function to a helper and refactor Calculator.jsx
   const getOperationById = (id) => {
     return data.find((operation) => operation.id === id);
   };
@@ -39,10 +41,9 @@ export const Dashboard = () => {
   const mutation = useMutation({
     mutationFn: async (record) => {
       const accessToken = await getAccessTokenSilently();
-      return submitOperation(accessToken, record);
+      return submitRecord(accessToken, record);
     },
     onSuccess: ({ data }) => {
-      console.log("ON SUCCESS", data);
       setInformationBoxState({
         balance: data.userBalance,
         result: data.operationResult,
@@ -50,8 +51,17 @@ export const Dashboard = () => {
         operationType: getOperationById(data.operationId).type,
       });
     },
+    onError: ({ response }) => {
+      setErrorMessage(response.data);
+      setShowError(true);
+    },
   });
   console.log("OPERATIONS data", data);
+
+  function handleCloseError() {
+    return () => setShowError(false);
+  }
+
   return (
     <AuthedLayout>
       {isLoading ? (
@@ -76,30 +86,45 @@ export const Dashboard = () => {
           />
         </Box>
       ) : (
-        <Paper
-          elevation={1}
-          sx={{
-            display: "flex",
-            flexFlow: "row",
-            justifyContent: "center",
-            flexWrap: "wrap",
-            maxWidth: 900,
-            alignSelf: "center",
-          }}
-        >
-          <>
-            <Calculator
-              operations={data}
-              onSubmit={(record) => {
-                mutation.mutate(record);
-              }}
-            />
-            <InformationBox
-              mutation={mutation}
-              informationBoxState={informationBoxState}
-            />
-          </>
-        </Paper>
+        <>
+          <Snackbar
+            open={showError}
+            autoHideDuration={6000}
+            onClose={handleCloseError}
+          >
+            <Alert
+              onClose={handleCloseError}
+              severity="error"
+              sx={{ width: "100%" }}
+            >
+              {errorMessage}
+            </Alert>
+          </Snackbar>
+          <Paper
+            elevation={1}
+            sx={{
+              display: "flex",
+              flexFlow: "row",
+              justifyContent: "center",
+              flexWrap: "wrap",
+              maxWidth: 900,
+              alignSelf: "center",
+            }}
+          >
+            <>
+              <Calculator
+                operations={data}
+                onSubmit={(record) => {
+                  mutation.mutate(record);
+                }}
+              />
+              <InformationBox
+                mutation={mutation}
+                informationBoxState={informationBoxState}
+              />
+            </>
+          </Paper>
+        </>
       )}
     </AuthedLayout>
   );

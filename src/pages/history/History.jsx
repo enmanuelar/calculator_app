@@ -1,9 +1,9 @@
 import Paper from "@mui/material/Paper";
 import { AuthedLayout } from "../../components/layout/AuthedLayout.jsx";
-import { CircularProgress } from "@mui/material";
+import { Alert, CircularProgress, Snackbar } from "@mui/material";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth0 } from "@auth0/auth0-react";
-import { fetchHistory } from "../../api/history.js";
+import { deleteRecord, fetchRecords } from "../../api/records.js";
 import MUIDataTable from "mui-datatables";
 import { useEffect, useState } from "react";
 import Typography from "@mui/material/Typography";
@@ -15,12 +15,13 @@ export const History = () => {
   const { getAccessTokenSilently } = useAuth0();
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(0);
+  const [selectedRecordId, setSelectedRecordId] = useState("");
   const queryClient = useQueryClient();
   const { data = [], isLoading } = useQuery(
     ["history"],
     async () => {
       const accessToken = await getAccessTokenSilently();
-      return fetchHistory(accessToken, pageNumber, rowsPerPage);
+      return fetchRecords(accessToken, pageNumber, rowsPerPage);
     },
     {
       refetchOnWindowFocus: false,
@@ -30,13 +31,23 @@ export const History = () => {
     },
   );
 
-  const mutation = useMutation({
+  const paginateMutation = useMutation({
     mutationFn: async (pageNumber) => {
       const accessToken = await getAccessTokenSilently();
-      return fetchHistory(accessToken, pageNumber, rowsPerPage);
+      return fetchRecords(accessToken, pageNumber, rowsPerPage);
     },
     onSuccess: (data) => {
       queryClient.setQueryData(["history"], data);
+    },
+  });
+
+  const deleteRecordMutation = useMutation({
+    mutationFn: async (recordId) => {
+      const accessToken = await getAccessTokenSilently();
+      return deleteRecord(accessToken, recordId);
+    },
+    onSuccess: (data) => {
+      paginateMutation.mutate(currentPage);
     },
   });
 
@@ -47,7 +58,7 @@ export const History = () => {
   console.log("DATA", data);
 
   const handleChangePage = (page) => {
-    mutation.mutate(page);
+    paginateMutation.mutate(page);
   };
   const columns = [
     {
@@ -93,6 +104,19 @@ export const History = () => {
   ];
   return (
     <AuthedLayout>
+      <Snackbar
+        open={deleteRecordMutation.isSuccess}
+        autoHideDuration={6000}
+        // onClose={handleCloseError} //TODO: handle onClose event
+      >
+        <Alert
+          // onClose={handleCloseError}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          Record deleted successfully
+        </Alert>
+      </Snackbar>
       {isLoading ? (
         <Box
           sx={{
@@ -130,7 +154,7 @@ export const History = () => {
             title={
               <Typography variant="h6">
                 Record history
-                {(isLoading || mutation.isLoading) && (
+                {(isLoading || paginateMutation.isLoading) && (
                   <CircularProgress
                     size={24}
                     style={{ marginLeft: 15, position: "relative", top: 4 }}
@@ -144,6 +168,7 @@ export const History = () => {
               filterType: "checkbox",
               responsive: "vertical",
               download: false,
+              selectableRows: "single",
               serverSide: true,
               count: data.count[0].total_count,
               rowsPerPage: rowsPerPage,
@@ -157,16 +182,21 @@ export const History = () => {
                   case "changeRowsPerPage":
                     setRowsPerPage(tableState.rowsPerPage);
                     break;
-                  // case 'sort':
-                  //   this.sort(tableState.page, tableState.sortOrder);
-                  //   break;
+                  case "rowSelectionChange":
+                    setSelectedRecordId(
+                      data.records[tableState.selectedRows.data[0]?.dataIndex]
+                        ?.id,
+                    );
+                    break;
+                  case "rowDelete":
+                    deleteRecordMutation.mutate(selectedRecordId);
+                    break;
                   default:
                     console.log("action not handled.");
                 }
               },
             }}
           />
-          {/*<HistoryTable data={data.data} />*/}
         </Paper>
       )}
     </AuthedLayout>

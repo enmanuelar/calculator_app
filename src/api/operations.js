@@ -10,17 +10,17 @@ export const fetchOperations = async (accessToken) => {
   return response.data;
 };
 
-export const submitOperation = async (accessToken, record) => {
-  const response = await axios.post(
-    `${ENV_VARS.API_URL}api/calculate`,
-    record,
-    {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
-    },
-  );
-  return response.data;
-};
+// export const submitOperation = async (accessToken, record) => {
+//   const response = await axios.post(
+//     `${ENV_VARS.API_URL}api/calculate`,
+//     record,
+//     {
+//       headers: {
+//         Accept: "application/json",
+//         "Content-Type": "application/json",
+//         Authorization: `Bearer ${accessToken}`,
+//       },
+//     },
+//   );
+//   return response.data;
+// };
