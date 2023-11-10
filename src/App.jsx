@@ -2,6 +2,7 @@ import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
 import { Route, Routes } from "react-router-dom";
 import { Auth } from "./components/auth/Auth";
 import { Dashboard } from "./pages/dashboard/Dashboard";
+import { History } from "./pages/history/History";
 import { Login } from "./pages/login/Login";
 import { NotFound } from "./pages/notFound/NotFound";
 import "./App.css";
@@ -20,6 +21,7 @@ export const App = () => {
         <Route element={<Auth />}>
           <Route path="/" element={<Dashboard />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/history" element={<History />} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>

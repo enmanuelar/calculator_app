@@ -5,9 +5,6 @@ const LayoutRoot = styled("div")(({ theme }) => ({
   display: "flex",
   flex: "1 1 auto",
   maxWidth: "100%",
-  // [theme.breakpoints.up("lg")]: {
-  //   paddingLeft: 280,
-  // },
 }));
 
 const LayoutContainer = styled("div")({

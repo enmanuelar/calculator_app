@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { CircularProgress, Paper } from "@mui/material";
-import Box from "@mui/material/Box";
-import { useMutation, useQuery } from "react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Calculator } from "../../components/calculator/Calculator.jsx";
 import { AuthedLayout } from "../../components/layout/AuthedLayout.jsx";
 import { fetchOperations, submitOperation } from "../../api/operations";
 import { InformationBox } from "../../components/informationBox/InformationBox.jsx";
+import Box from "@mui/material/Box";
 
 export const Dashboard = () => {
   const { getAccessTokenSilently } = useAuth0();
@@ -55,15 +55,26 @@ export const Dashboard = () => {
   return (
     <AuthedLayout>
       {isLoading ? (
-        <CircularProgress
+        <Box
           sx={{
             display: "flex",
             position: "absolute",
             justifyContent: "center",
             alignItems: "center",
-            height: "80%",
+            top: "50%",
+            width: "100%",
           }}
-        />
+        >
+          <CircularProgress
+            sx={{
+              display: "flex",
+              position: "absolute",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "80%",
+            }}
+          />
+        </Box>
       ) : (
         <Paper
           elevation={1}

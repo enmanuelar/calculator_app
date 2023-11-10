@@ -1,11 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { App } from "./App.jsx";
 import { BrowserRouter } from "react-router-dom";
-import "./index.css";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Auth0Provider } from "@auth0/auth0-react";
+import "./index.css";
 import { ENV_VARS } from "./env.js";
+import { App } from "./App.jsx";
 
 const queryClient = new QueryClient();
 
