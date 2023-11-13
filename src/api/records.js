@@ -6,11 +6,19 @@ import { ENV_VARS } from "../env.js";
  * @param {string} accessToken The Auth0 access token
  * @param {number} page The page number for pagination
  * @param {number} limit The limit number for pagination
+ * @param {string} orderBy The column to use for the sorting
+ * @param {string} direction The direction of the sorting
  * @returns {Object} Response object
  */
-export const fetchRecords = async (accessToken, page, limit) => {
+export const fetchRecords = async (
+  accessToken,
+  page,
+  limit,
+  orderBy,
+  direction,
+) => {
   const response = await axios.get(
-    `${ENV_VARS.API_URL}api/records?page=${page}&limit=${limit}`,
+    `${ENV_VARS.API_URL}api/records?page=${page}&limit=${limit}&orderBy=${orderBy}&direction=${direction}`,
     {
       headers: {
         "Content-Type": "application/json",

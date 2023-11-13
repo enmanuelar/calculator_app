@@ -5,6 +5,7 @@ import * as PropTypes from "prop-types";
 import { InformationText } from "./InformationText.jsx";
 
 export const InformationBox = (props) => {
+  const { isPending } = props.mutation;
   return (
     <Box
       sx={{
@@ -38,24 +39,24 @@ export const InformationBox = (props) => {
       >
         <Typography variant="h4">Information</Typography>
         <InformationText
-          isLoading={props.mutation.isLoading}
+          isLoading={isPending}
           text={`Result: ${props.informationBoxState.result}`}
           color={"green"}
         />
         <Divider />
         <InformationText
-          isLoading={props.mutation.isLoading}
+          isLoading={isPending}
           text={`Operation type: ${props.informationBoxState.operationType}`}
         />
         <Divider />
         <InformationText
-          isLoading={props.mutation.isLoading}
+          isLoading={isPending}
           text={`Operation cost: ${props.informationBoxState.lastCost} Credits`}
           color={"indianred"}
         />
         <Divider />
         <InformationText
-          isLoading={props.mutation.isLoading}
+          isLoading={isPending}
           text={`Balance: ${props.informationBoxState.balance} Credits`}
         />
         <Divider />

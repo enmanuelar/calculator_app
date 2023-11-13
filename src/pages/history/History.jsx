@@ -7,34 +7,45 @@ import { deleteRecord, fetchRecords } from "../../api/records.js";
 import MUIDataTable from "mui-datatables";
 import { useEffect, useState } from "react";
 import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
-
-const pageNumber = 0;
+import { Loading } from "../../components/loading/Loading.jsx";
+import { useIsMount } from "../../hooks/useIsMount.jsx";
 
 export const History = () => {
   const { getAccessTokenSilently } = useAuth0();
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(0);
-  const [selectedRecordId, setSelectedRecordId] = useState("");
+  const [orderBy, setOrderBy] = useState("date");
+  const [direction, setDirection] = useState("asc");
+  const isMount = useIsMount();
   const queryClient = useQueryClient();
-  const { data = [], isLoading } = useQuery(
-    ["history"],
-    async () => {
+  const { data: recordsData = [], isLoading } = useQuery({
+    queryKey: ["history"],
+    queryFn: async () => {
       const accessToken = await getAccessTokenSilently();
-      return fetchRecords(accessToken, pageNumber, rowsPerPage);
+      return fetchRecords(
+        accessToken,
+        currentPage,
+        rowsPerPage,
+        orderBy,
+        direction,
+      );
     },
-    {
-      refetchOnWindowFocus: false,
-      select: (data) => {
-        return data.data;
-      },
+    refetchOnWindowFocus: false,
+    select: (data) => {
+      return data.data;
     },
-  );
+  });
 
-  const paginateMutation = useMutation({
-    mutationFn: async (pageNumber) => {
+  const recordsDataMutation = useMutation({
+    mutationFn: async () => {
       const accessToken = await getAccessTokenSilently();
-      return fetchRecords(accessToken, pageNumber, rowsPerPage);
+      return fetchRecords(
+        accessToken,
+        currentPage,
+        rowsPerPage,
+        orderBy,
+        direction,
+      );
     },
     onSuccess: (data) => {
       queryClient.setQueryData(["history"], data);
@@ -46,20 +57,17 @@ export const History = () => {
       const accessToken = await getAccessTokenSilently();
       return deleteRecord(accessToken, recordId);
     },
-    onSuccess: (data) => {
-      paginateMutation.mutate(currentPage);
+    onSuccess: () => {
+      recordsDataMutation.mutate();
     },
   });
 
   useEffect(() => {
-    handleChangePage(currentPage);
-  }, [rowsPerPage, currentPage]);
+    if (!isMount) {
+      recordsDataMutation.mutate();
+    }
+  }, [rowsPerPage, currentPage, direction, orderBy]);
 
-  console.log("DATA", data);
-
-  const handleChangePage = (page) => {
-    paginateMutation.mutate(page);
-  };
   const columns = [
     {
       name: "operationType",
@@ -118,26 +126,7 @@ export const History = () => {
         </Alert>
       </Snackbar>
       {isLoading ? (
-        <Box
-          sx={{
-            display: "flex",
-            position: "absolute",
-            justifyContent: "center",
-            alignItems: "center",
-            top: "50%",
-            width: "100%",
-          }}
-        >
-          <CircularProgress
-            sx={{
-              display: "flex",
-              position: "absolute",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "80%",
-            }}
-          />
-        </Box>
+        <Loading />
       ) : (
         <Paper
           elevation={1}
@@ -154,7 +143,7 @@ export const History = () => {
             title={
               <Typography variant="h6">
                 Record history
-                {(isLoading || paginateMutation.isLoading) && (
+                {(isLoading || recordsDataMutation.isPending) && (
                   <CircularProgress
                     size={24}
                     style={{ marginLeft: 15, position: "relative", top: 4 }}
@@ -162,38 +151,35 @@ export const History = () => {
                 )}
               </Typography>
             }
-            data={data.records}
+            data={recordsData.records}
             columns={columns}
             options={{
               filterType: "checkbox",
               responsive: "vertical",
               download: false,
+              print: false,
+              filter: false,
               selectableRows: "single",
               serverSide: true,
-              count: data.count[0].total_count,
+              search: false,
+              count: recordsData.count[0].total_count,
               rowsPerPage: rowsPerPage,
-              onTableChange: (action, tableState) => {
-                console.log(action, tableState);
-                switch (action) {
-                  case "changePage":
-                    // handleChangePage(tableState.page);
-                    setCurrentPage(tableState.page);
-                    break;
-                  case "changeRowsPerPage":
-                    setRowsPerPage(tableState.rowsPerPage);
-                    break;
-                  case "rowSelectionChange":
-                    setSelectedRecordId(
-                      data.records[tableState.selectedRows.data[0]?.dataIndex]
-                        ?.id,
-                    );
-                    break;
-                  case "rowDelete":
-                    deleteRecordMutation.mutate(selectedRecordId);
-                    break;
-                  default:
-                    console.log("action not handled.");
-                }
+              rowsPerPageOptions: [5, 10, 15],
+              onChangePage: (page) => {
+                setCurrentPage(page);
+              },
+              onChangeRowsPerPage: (numberOfRows) => {
+                setRowsPerPage(numberOfRows);
+              },
+              onColumnSortChange: (changedColumn, sortDirection) => {
+                setDirection(sortDirection);
+                setOrderBy(changedColumn);
+              },
+              onRowsDelete: (currentRowSelected) => {
+                const recordId =
+                  recordsData.records[currentRowSelected.data[0]?.dataIndex]
+                    ?.id;
+                deleteRecordMutation.mutate(recordId);
               },
             }}
           />

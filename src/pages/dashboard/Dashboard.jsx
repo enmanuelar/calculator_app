@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { Alert, CircularProgress, Paper, Snackbar } from "@mui/material";
+import { Alert, Paper, Snackbar } from "@mui/material";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Calculator } from "../../components/calculator/Calculator.jsx";
 import { AuthedLayout } from "../../components/layout/AuthedLayout.jsx";
 import { fetchOperations } from "../../api/operations";
 import { InformationBox } from "../../components/informationBox/InformationBox.jsx";
-import Box from "@mui/material/Box";
 import { submitRecord } from "../../api/records.js";
+import { Loading } from "../../components/loading/Loading.jsx";
 
 export const Dashboard = () => {
   const { getAccessTokenSilently } = useAuth0();
@@ -20,19 +20,17 @@ export const Dashboard = () => {
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const { data = [], isLoading } = useQuery(
-    ["operations"],
-    async () => {
+  const { data = [], isLoading } = useQuery({
+    queryKey: ["operations"],
+    queryFn: async () => {
       const accessToken = await getAccessTokenSilently();
       return fetchOperations(accessToken);
     },
-    {
-      refetchOnWindowFocus: false,
-      select: (data) => {
-        return data.data;
-      },
+    refetchOnWindowFocus: false,
+    select: (data) => {
+      return data.data;
     },
-  );
+  });
 
   const getOperationById = (id) => {
     return data.find((operation) => operation.id === id);
@@ -65,26 +63,7 @@ export const Dashboard = () => {
   return (
     <AuthedLayout>
       {isLoading ? (
-        <Box
-          sx={{
-            display: "flex",
-            position: "absolute",
-            justifyContent: "center",
-            alignItems: "center",
-            top: "50%",
-            width: "100%",
-          }}
-        >
-          <CircularProgress
-            sx={{
-              display: "flex",
-              position: "absolute",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "80%",
-            }}
-          />
-        </Box>
+        <Loading />
       ) : (
         <>
           <Snackbar
