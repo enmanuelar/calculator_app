@@ -18,7 +18,7 @@ export const fetchRecords = async (
   direction,
 ) => {
   const response = await axios.get(
-    `${ENV_VARS.API_URL}api/records?page=${page}&limit=${limit}&orderBy=${orderBy}&direction=${direction}`,
+    `${ENV_VARS.API_URL}api/v1/records?page=${page}&limit=${limit}&orderBy=${orderBy}&direction=${direction}`,
     {
       headers: {
         "Content-Type": "application/json",
@@ -42,13 +42,17 @@ export const fetchRecords = async (
  * @returns {Promise} Promise object that resolves to the server response
  */
 export const submitRecord = async (accessToken, record) => {
-  const response = await axios.post(`${ENV_VARS.API_URL}api/records`, record, {
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
+  const response = await axios.post(
+    `${ENV_VARS.API_URL}api/v1/records`,
+    record,
+    {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
     },
-  });
+  );
   return response.data;
 };
 
@@ -60,7 +64,7 @@ export const submitRecord = async (accessToken, record) => {
  */
 export const deleteRecord = async (accessToken, recordId) => {
   const response = await axios.delete(
-    `${ENV_VARS.API_URL}api/records/${recordId}`,
+    `${ENV_VARS.API_URL}api/v1/records/${recordId}`,
     {
       headers: {
         Accept: "application/json",
