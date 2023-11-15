@@ -6,6 +6,7 @@ import { Auth0Provider } from "@auth0/auth0-react";
 import "./index.css";
 import { ENV_VARS } from "./env.js";
 import { App } from "./App.jsx";
+import { ErrorBoundary } from "./components/errorBoundary/ErrorBoundary.jsx";
 
 const queryClient = new QueryClient();
 
@@ -21,7 +22,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         }}
       >
         <QueryClientProvider client={queryClient}>
-          <App />
+          <ErrorBoundary>
+            <App />
+          </ErrorBoundary>
         </QueryClientProvider>
       </Auth0Provider>
     </BrowserRouter>
