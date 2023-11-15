@@ -10,7 +10,6 @@ import { FormInputOperationsDropdown } from "../form/FormInputOperationsDropdown
 export function Calculator(props) {
   const { handleSubmit, reset, control, setValue } = useForm();
   const onSubmit = (data) => {
-    console.log("SUBMIT", data);
     props.onSubmit(data);
   };
 

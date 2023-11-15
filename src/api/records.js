@@ -75,3 +75,19 @@ export const deleteRecord = async (accessToken, recordId) => {
   );
   return response.data;
 };
+
+/**
+ * Fetch the last record of the current user
+ * @param {string} accessToken The Auth0 access token
+ * @returns {Promise} Promise object that resolves to the server response
+ */
+export const fetchLastRecord = async (accessToken) => {
+  const response = await axios.get(`${ENV_VARS.API_URL}api/v1/records/last`, {
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  return response.data;
+};

@@ -4,7 +4,13 @@ import Typography from "@mui/material/Typography";
 import * as PropTypes from "prop-types";
 import { InformationText } from "./InformationText.jsx";
 
-export const InformationBox = ({ isPending, informationBoxState }) => {
+export const InformationBox = ({
+  isPending,
+  operationResult,
+  userBalance,
+  lastCost,
+  selectedOperationType,
+}) => {
   return (
     <Box
       sx={{
@@ -39,24 +45,24 @@ export const InformationBox = ({ isPending, informationBoxState }) => {
         <Typography variant="h4">Information</Typography>
         <InformationText
           isLoading={isPending}
-          text={`Result: ${informationBoxState.result}`}
+          text={`Result: ${operationResult}`}
           color={"green"}
         />
         <Divider />
         <InformationText
           isLoading={isPending}
-          text={`Operation type: ${informationBoxState.operationType}`}
+          text={`Operation type: ${selectedOperationType}`}
         />
         <Divider />
         <InformationText
           isLoading={isPending}
-          text={`Operation cost: ${informationBoxState.lastCost} Credits`}
+          text={`Operation cost: ${lastCost} Credits`}
           color={"indianred"}
         />
         <Divider />
         <InformationText
           isLoading={isPending}
-          text={`Balance: ${informationBoxState.balance} Credits`}
+          text={`Balance: ${userBalance} Credits`}
         />
         <Divider />
       </Paper>
@@ -66,10 +72,8 @@ export const InformationBox = ({ isPending, informationBoxState }) => {
 
 InformationBox.propTypes = {
   isPending: PropTypes.bool,
-  informationBoxState: PropTypes.shape({
-    result: PropTypes.string,
-    balance: PropTypes.string,
-    lastCost: PropTypes.string,
-    operationType: PropTypes.string,
-  }),
+  operationResult: PropTypes.string,
+  userBalance: PropTypes.number,
+  lastCost: PropTypes.number,
+  selectedOperationType: PropTypes.string,
 };
