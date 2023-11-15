@@ -4,8 +4,7 @@ import Typography from "@mui/material/Typography";
 import * as PropTypes from "prop-types";
 import { InformationText } from "./InformationText.jsx";
 
-export const InformationBox = (props) => {
-  const { isPending } = props.mutation;
+export const InformationBox = ({ isPending, informationBoxState }) => {
   return (
     <Box
       sx={{
@@ -40,24 +39,24 @@ export const InformationBox = (props) => {
         <Typography variant="h4">Information</Typography>
         <InformationText
           isLoading={isPending}
-          text={`Result: ${props.informationBoxState.result}`}
+          text={`Result: ${informationBoxState.result}`}
           color={"green"}
         />
         <Divider />
         <InformationText
           isLoading={isPending}
-          text={`Operation type: ${props.informationBoxState.operationType}`}
+          text={`Operation type: ${informationBoxState.operationType}`}
         />
         <Divider />
         <InformationText
           isLoading={isPending}
-          text={`Operation cost: ${props.informationBoxState.lastCost} Credits`}
+          text={`Operation cost: ${informationBoxState.lastCost} Credits`}
           color={"indianred"}
         />
         <Divider />
         <InformationText
           isLoading={isPending}
-          text={`Balance: ${props.informationBoxState.balance} Credits`}
+          text={`Balance: ${informationBoxState.balance} Credits`}
         />
         <Divider />
       </Paper>
@@ -66,11 +65,11 @@ export const InformationBox = (props) => {
 };
 
 InformationBox.propTypes = {
-  mutation: PropTypes.object,
+  isPending: PropTypes.bool,
   informationBoxState: PropTypes.shape({
-    result: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    result: PropTypes.string,
     balance: PropTypes.string,
-    lastCost: PropTypes.number,
+    lastCost: PropTypes.string,
     operationType: PropTypes.string,
   }),
 };

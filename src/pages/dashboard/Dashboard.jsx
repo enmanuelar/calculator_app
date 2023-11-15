@@ -20,7 +20,7 @@ export const Dashboard = () => {
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const { data = [], isLoading } = useQuery({
+  const { data: operationsData = [], isLoading } = useQuery({
     queryKey: ["operations"],
     queryFn: async () => {
       const accessToken = await getAccessTokenSilently();
@@ -33,15 +33,16 @@ export const Dashboard = () => {
   });
 
   const getOperationById = (id) => {
-    return data.find((operation) => operation.id === id);
+    return operationsData.find((operation) => operation.id === id);
   };
 
-  const mutation = useMutation({
+  const recordMutation = useMutation({
     mutationFn: async (record) => {
       const accessToken = await getAccessTokenSilently();
       return submitRecord(accessToken, record);
     },
-    onSuccess: ({ data }) => {
+    onSuccess: (response) => {
+      const { data } = response.data;
       setInformationBoxState({
         balance: data.userBalance,
         result: data.operationResult,
@@ -54,7 +55,6 @@ export const Dashboard = () => {
       setShowError(true);
     },
   });
-  console.log("OPERATIONS data", data);
 
   function handleCloseError() {
     return () => setShowError(false);
@@ -92,13 +92,13 @@ export const Dashboard = () => {
           >
             <>
               <Calculator
-                operations={data}
+                operations={operationsData}
                 onSubmit={(record) => {
-                  mutation.mutate(record);
+                  recordMutation.mutate(record);
                 }}
               />
               <InformationBox
-                mutation={mutation}
+                isPending={recordMutation.isPending}
                 informationBoxState={informationBoxState}
               />
             </>
