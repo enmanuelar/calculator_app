@@ -112,16 +112,8 @@ export const History = () => {
   ];
   return (
     <AuthedLayout>
-      <Snackbar
-        open={deleteRecordMutation.isSuccess}
-        autoHideDuration={6000}
-        // onClose={handleCloseError} //TODO: handle onClose event
-      >
-        <Alert
-          // onClose={handleCloseError}
-          severity="success"
-          sx={{ width: "100%" }}
-        >
+      <Snackbar open={deleteRecordMutation.isSuccess} autoHideDuration={6000}>
+        <Alert severity="success" sx={{ width: "100%" }}>
           Record deleted successfully
         </Alert>
       </Snackbar>
