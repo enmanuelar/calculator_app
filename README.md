@@ -1,8 +1,30 @@
-# React + Vite
+# Arithmetic calculator UI
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the UI for the TrueNorth's arithmetic project exercise
 
-Currently, two official plugins are available:
+## Installing and running the project locally
+Make sure you have Node 18 installed.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+
+Before running the project you need to create a `.env` file at the root level, you can use the `.env-default` by renaming it to `.env`. The environment variables will be attached to the project's submission email.
+
+
+Install dependencies:
+```
+npm install
+```
+
+Build the project with:
+```
+npm run build
+```
+
+Run it locally:
+```
+npm run dev
+```
+
+## Deployment
+This project is hosted in `AWS Amplify`, it will be built and deployed automatically.
+
+You can access the live environment [here](https://main.d21vg3coxdhg0o.amplifyapp.com)
