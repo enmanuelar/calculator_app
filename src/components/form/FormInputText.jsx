@@ -7,6 +7,7 @@ export const FormInputText = ({ name, control, label }) => {
     <FormControl variant="standard" sx={{ m: 1, mt: 3, width: "25ch" }}>
       <Controller
         name={name}
+        defaultValue={""}
         control={control}
         render={({ field: { onChange, value }, fieldState: { error } }) => (
           <TextField

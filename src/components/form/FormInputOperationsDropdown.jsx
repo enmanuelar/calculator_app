@@ -24,6 +24,7 @@ export const FormInputOperationsDropdown = ({
     <FormControl variant="standard" sx={{ m: 1, mt: 3, width: "25ch" }}>
       <InputLabel>{label}</InputLabel>
       <Controller
+        defaultValue={""}
         render={({ field: { onChange, value } }) => (
           <Select onChange={onChange} value={value}>
             {generateSingleOptions()}
